@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<title>project name</title>
+<link rel="icon" type="image/icon" href="icon.png"><!-- Make a 100x100 image in ms paint or something for this -->
+
+<style>
+    html{
+        overflow: hidden;
+    }
+</style>
+
+<!-- <body oncontextmenu="return false;"></body> --> <!-- uncomment to remove rightclick menu -->
+<div style="text-align: center;vertical-align: middle;font-weight: 1000;font-size: 500%;">
+    <noscript>Please allow Javascript!</noscript>
+</div>
+<canvas id="c" hidden="true" style="position: absolute; left: 0; top: 0;" ></canvas>
+
+<script src="lib.js"></script>
+<script src="data.js"></script>
+<script src="classes.js"></script>
+<script>
+    const _c = document.getElementById("c");
+    const _ctx = _c.getContext("2d");
+    var lastframetime = 0;
+    var lasttickdelta = 0;
+    // var avgfps = 30
+    // var starttime = performance.now()
+    // var framecount = 0
+
+
+    var mouse = {x:0,y:0,left:false,right:false,middle:false,front:false,back:false}
+    var keyboard = Array(255).fill(false)
+
+
+    _c.hidden = false;
+    ResizeCanvas();
+
+    window.addEventListener('resize', ResizeCanvas);
+
+    function ResizeCanvas(){
+        _c.width = window.innerWidth;
+        _c.height = window.innerHeight;
+        Camera.setScale(window.innerWidth,window.innerHeight);
+    }
+
+    document.addEventListener("mousemove", function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    })
+
+    document.addEventListener("mousedown", function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        if(e.button == 0){
+            mouse.left = true;
+        }else if(e.button == 1){
+            mouse.middle = true;
+        }else if(e.button == 2){
+            mouse.right = true;
+        }else if(e.button == 3){
+            e.preventDefault();
+            mouse.front = true;
+        }else if(e.button == 4){
+            e.preventDefault();
+            mouse.back = true;
+        }
+    })
+    document.addEventListener("mouseup", function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        if(e.button == 0){
+            mouse.left = false;
+        }else if(e.button == 1){
+            mouse.middle = false;
+        }else if(e.button == 2){
+            mouse.right = false;
+        }else if(e.button == 3){
+            e.preventDefault();
+            mouse.front = false;
+        }else if(e.button == 4){
+            e.preventDefault();
+            mouse.back = false;
+        }
+    })
+
+    document.addEventListener("keydown", function (e) {
+        e = e || window.event;
+        if (e.code === "Tab") e.preventDefault();
+        // if ((e.ctrlKey || e.metaKey) && e.keyCode == 114){ //ctrl r, uncomment to prevent quick reloading
+        //     e.preventDefault();
+        // }
+        ProcessKeystroke(e.keyCode, true)
+    });
+    document.addEventListener("keyup", function (e) {
+        e = e || window.event;
+        if (e.code === "Tab") e.preventDefault();
+        ProcessKeystroke(e.keyCode, false)
+    });
+    function ProcessKeystroke(key, isdown){
+        keyboard[key] = isdown;
+    }
+
+    addEventListener("load", e => Init())
+    function Frame(){
+        let dt = performance.now() - lastframetime
+        lastframetime = performance.now()
+        lasttickdelta += dt
+
+        if(lasttickdelta >= 1000/30){
+            // framecount++
+            // avgfps = framecount/((performance.now()-starttime)/1000)
+            lasttickdelta = lasttickdelta-(1000/30)
+            if(lasttickdelta > 100){
+                lasttickdelta = 0
+            }
+            Tick()
+        }
+        Draw(_ctx)
+        requestAnimationFrame(Frame)
+    }
+
+    function Init(){
+        KeyboardHelper.AddRange(Data.defaultKeybinds)
+        requestAnimationFrame(Frame)
+    }
+
+    function Tick(){
+        //do your ticking logic here
+    }
+    
+    function Draw(ctx){
+        ctx.clearRect(0,0,_c.width,_c.height);
+        //do your drawing logic here
+
+    }
+</script>

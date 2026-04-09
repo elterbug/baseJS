@@ -1,0 +1,1 @@
+This folder is for assets such as .pngs and .mp3s (or .wavs)
